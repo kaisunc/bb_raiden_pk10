@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour {
 	void Start () {
         m_StartWait = new WaitForSeconds(m_StartDelay);
         m_EndWait = new WaitForSeconds(m_EndDelay);		
-        SpawnPlanes();
+        //SpawnPlanes();
 		StartCoroutine(GameLoop());
         bg = GameObject.Find("Runway");
         bg.GetComponent<PlanetMover>().enabled = false;

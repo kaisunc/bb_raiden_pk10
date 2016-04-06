@@ -13,6 +13,7 @@ public class ShipMover : MonoBehaviour {
     private GameObject jetflare;
     List<GameObject> effectList;
 
+    public int engineState = 1;
     private void Start(){
         
     }
@@ -21,40 +22,51 @@ public class ShipMover : MonoBehaviour {
         int randCol = Random.Range(0, 3);
         GameObject sm = GameObject.Find("GameManager");
         GetComponent<Renderer>().material.SetColor("_TeamColor", sm.GetComponent<GameManager>().team_colors[randCol]);
-        //jetflare = this.gameObject.transform.GetChild(1).GetChild(0).gameObject;
-        //jetflare = this.gameObject.transform.GetChild(2).GetChild(0).gameObject;
-        effectList = new List<GameObject>();
-        print(this.gameObject.name);
-        //effectList.Add(this.gameObject.transform.GetChild(1).GetChild(0).gameObject);
-        //effectList.Add(this.gameObject.transform.GetChild(2).GetChild(0).gameObject);
-        EngineStart();
+        int engines = transform.childCount;
 
+        effectList = new List<GameObject>();
+        for(int i=0; i<engines; i++){
+            effectList.Add(this.gameObject.transform.GetChild(i).GetChild(0).gameObject);
+        }
+
+        EngineStart();
     }
 
 
-    public void EngineStart(){
+    private void EngineStart(){
         foreach( GameObject go in effectList){
-            go.GetComponent<ParticleSystem>().startLifetime = 0.2f;
-            go.GetComponent<ParticleSystem>().startSpeed = 1f;            
+            go.GetComponent<enginePresets>().setEngine(1);
         }
     }
 
     private void EngineCruise(){
         foreach( GameObject go in effectList){
-            go.GetComponent<ParticleSystem>().startLifetime = 0.4f;
-            go.GetComponent<ParticleSystem>().startSpeed = 1.5f;            
+            go.GetComponent<enginePresets>().setEngine(2);
+
         }        
     }
 
     private void EngineAB(){
         foreach( GameObject go in effectList){
-            go.GetComponent<ParticleSystem>().startLifetime = 0.8f;
-            go.GetComponent<ParticleSystem>().startSpeed = 2f;            
+            go.GetComponent<enginePresets>().setEngine(3);
         }        
     }
 
+    public void SetEngine(int engineState){
+        if(engineState == 1){
+            EngineStart();
+        }
+
+        else if(engineState == 2){
+            EngineCruise();
+        }
+        else if(engineState == 3){
+            EngineAB();
+        }  
+    }
 
     private void FixedUpdate(){
+      
         Move();
     }
 
@@ -66,16 +78,12 @@ public class ShipMover : MonoBehaviour {
         }
         
         if(transform.position.z < randPos + 0.0001f && transform.position.z > randPos - 0.0001f ){ //|| transform.position.z > (randPos - 0.1f)){
-            EngineCruise();
-
         }
         else if(transform.position.z < randPos){
-            EngineAB();            
             float step = m_Speed * Time.deltaTime;
             transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x,transform.position.y , randPos), step);
         }
         else if(transform.position.z > randPos){
-            EngineCruise();
             float step = m_Speed * Time.deltaTime;
             transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x,transform.position.y , randPos), step);
         }
